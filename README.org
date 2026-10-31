@@ -2,7 +2,7 @@
 
 This repository contains a collection of mini-projects, utility programs, data structures, and applications. 
 
-* Directory Structure
+** Directory Structure
 
 | Directory     | Description                                           |
 |---------------+-------------------------------------------------------|
