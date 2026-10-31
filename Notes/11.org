@@ -1,0 +1,91 @@
+* Chapter 11: Pointers
+** Pointer variables
+This declaration states that ~p~ is a /pointer variable/ capable of pointing to /objects/ of type ~int~.
+#+begin_src C
+int *p;
+#+end_src
+** The address and indirection operators
+To find the address of a variable, we use the ~&~ /(address)/ operator. To gain access to the /object/ that a pointer points to, we use the ~*~ /(indirection)/ operator. If ~p~ is a pointer, then ~*p~ represents the object to which ~p~ currently points.
+*** The address operator
+By default, when the pointer is declared, it is not initialised automatically, so we use the /address of/ operator to assign it the address of some variable.  
+#+begin_src C
+int i, *p;
+p = &i;
+#+end_src
+For more compact assignment:
+#+begin_src C
+int i;
+int *p = &i;
+#+end_src
+*** The indirection operator
+Once a pointer variable points to an object, we can use the ~*~ /(indirection)/ operator to access what’s stored in the object. If ~p~ points to ~i~, for example, we can print the value of ~i~ as follows:
+#+begin_src C
+printf("%d\n", *p);
+#+end_src
+The /value/ of ~i~ will be printed, not the /address/.
+In other words, ~*~ is the inverse of ~&~, so
+#+begin_src C
+j = *&i;
+#+end_src
+is the same as
+#+begin_src C
+j = i;
+#+end_src
+** Pointer Assignment
+e.g. : Be careful not to confuse ~q = p;~ with ~*q = *p;~
+#+begin_src C
+p = &i;
+q = &j;
+i = 1;
+#+end_src
+1. ~p~ has been assigned the value at ~i~, which is 1.
+2. ~q~ has been assigned the value at ~j~, whatever that may be.
+#+begin_src C
+*q = *p;
+#+end_src
+This assignment does not mean that ~p~ now has the value of 1. It means that now, ~j~ has the value of 1, seeing as ~*q~ changes the value at the address of ~p~ which is ~j~.
+** Pointers as Arguments
+Passing by /reference/ is an excellent usage of /pointers/. It aims to solve a problem that arises when passing variables as arguments to functions. It is nigh impossible to modify any variables that are passed into the function, but sometimes we need this functionality, so we use a pointer as a reference to the address of the value we wish to change, allowing the function to *both* /read/ and /modify/ the value. To see this is in action, please look at the following example:
+The prototype of the function is as follows:
+#+begin_src C
+void decompose(double x, long *int_part, double *frac_part);
+#+end_src
+or
+#+begin_src C
+void decompose(double, long *, double *);
+#+end_src
+The actual function is below:
+#+begin_src C
+void decompose(double x, long *int_part, double *frac_part) {
+  *int_part = (long) x;
+  *frac_part = x - *int_part;
+}
+#+end_src
+and we can call it like this, remembering that because the function takes /pointers/, we need ~&~ for ~i~ and ~d~, so the value at the address of ~i~ and ~d~ is changed.
+#+begin_src C
+decompose(3.14159, &i, &d);
+#+end_src
+The usage of /passing by reference/ should not be novice to us, we have been using it for quite a while now, in the ~scanf()~ function. The second argument ~&i~ is an example of this.
+#+begin_src C
+int i;
+printf("Integer: ");
+scanf("%d", &i);
+#+end_src
+** Pointers as return values
+We can not only /pass/ pointers as arguments, but also /return/ pointers. See the following example:
+#+begin_src C
+int *max(int *a, int *b)
+{
+  if (*a > *b)
+    return a;
+  else
+    return b;
+}
+#+end_src
+The program, when given two integers, returns a /pointer/ to whichever integer is larger.
+Calling it, passes pointers to two ~int~ variables and stores it in a /pointer/.
+#+begin_src C
+int *p, i, j;
+p = max(&i, &j);
+#+end_src
+

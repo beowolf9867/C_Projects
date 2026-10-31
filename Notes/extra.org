@@ -1,0 +1,110 @@
+* Extra notes
+
+** Horner's Rule
+:PROPERTIES:
+:Description: Efficient algorithm for polynomial evaluation
+:END:
+
+*** Summary
+Horner's rule is a method for evaluating polynomials efficiently by minimizing
+the number of multiplications. Instead of computing each term separately,
+the polynomial is rewritten in a nested form that reduces both computational
+cost and numerical errors.
+
+
+*** History
+- Named after *William George Horner* (1786–1837), an English mathematician.
+- Popularized in 1819, but known earlier to Chinese mathematicians such as
+  *Qin Jiushao* in the 13th century.
+- Today, Horner’s rule is fundamental in numerical analysis and compiler design.
+
+
+*** Explanation
+A polynomial of degree n is usually written as:
+
+#+BEGIN_EXPORT latex
+\[
+P(x) = a_n x^n + a_{n-1} x^{n-1} + \cdots + a_1 x + a_0
+\]
+#+END_EXPORT
+
+Using Horner’s rule, it is rewritten in nested form:
+
+#+BEGIN_EXPORT latex
+\[
+P(x) = (...((a_n x + a_{n-1})x + a_{n-2})x + \cdots + a_1)x + a_0
+\]
+#+END_EXPORT
+
+This reduces:
+- Multiplications: from roughly \(n^2\) naive multiplications to just \(n\).
+- Additions: exactly \(n\).
+- Improves numerical stability by avoiding large intermediate values.
+
+
+*** Example
+Let:
+
+#+BEGIN_EXPORT latex
+\[
+P(x) = 2x^3 - 6x^2 + 2x - 1
+\]
+#+END_EXPORT
+
+Naive evaluation at \(x = 3\):
+
+#+BEGIN_EXPORT latex
+2 * 3^3 - 6 * 3^2 + 2 * 3 - 1
+= 54 - 54 + 6 - 1
+= 5
+#+END_SRC
+
+Using Horner’s rule:
+
+#+BEGIN_EXPORT latex
+\[
+P(x) = ((2x - 6)x + 2)x - 1
+\]
+#+END_EXPORT
+
+Step-by-step at \(x = 3\):
+
+#+BEGIN_EXPORT latex
+Step 1: 2 * 3 - 6 = 0
+Step 2: 0 * 3 + 2 = 2
+Step 3: 2 * 3 - 1 = 5
+#+END_EXPORT
+
+Both methods yield 5, but Horner’s rule is more efficient.
+
+** Computing an UPC check digit
+
+*** What they are?
+
+- First digit
+  - Type of item
+    - ~2~ for items that must be *weighed*
+    - ~3~ for *drugs* and *health-related merchandise*
+    - ~5~ for *merchandise*
+
+- First group of five digits
+  - Identifies the manufacturer
+
+- Second group of five digits
+  - Identifies the product
+
+- The final digit
+  - A ~check~ digit
+    - to identify an error in the preceding digits.
+
+*** How to calculate the ~check~ digit?
+
+  - Add the ~first~, ~third~, ~fifth~, ~seventh~, ~ninth~ and ~eleventh~ digits.
+  - Add the ~second~, ~fourth~, ~sixth~, ~eighth~ and ~tenth~ digits.
+
+  - Multiply the ~first~ *sum* by ~3~ and add it to the ~second~ *sum*.
+
+  - Subtract ~one~ from the total.
+  - Compute the *remainder* when the adjusted total is divided by ~ten~.
+  - Subtract the *remainder* from ~nine~.
+    

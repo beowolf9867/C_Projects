@@ -1,0 +1,59 @@
+* Chapter Ten: Program Organisation
+** Local Variables
+These have the following properties
+  1. Automatic Storage Duration:
+     1. The storage duration (or extent) of a variable is the portion of program execution during which storage for the variable exists.
+     2. Storage for a local variable is “automatically” allocated when the enclosing function is called and deallocated when the function returns, so the variable is said to have automatic storage duration.
+     3. A local variable doesn’t retain its value when its enclosing function returns. When the function is called again, there’s no guarantee that the variable will still have its old value.
+  2. Block scope
+     1. The scope of a variable is the portion of the program text in which the variable can be referenced.
+     2. A local variable has block scope: it is visible from its point of declaration to the end of the enclosing function body.
+     3. Since the scope of a local variable doesn’t extend beyond the function to which it belongs, other functions can use the same name for other purposes.
+*** Static Local Variables
+These have the following properties:
+  1. Static storage duration
+     1. permanent storage location, so it retains its value throughout the execution of the program
+** External Variables
+These have the following properties:
+  1. Static storage duration
+     1. A value stored in an external variable will stay there indefinitely
+  2. File scope
+     1. it is visible from its point of declaration to the end of the enclosing file. As a result, an external variable can be accessed (and potentially modified) by all functions that follow its declaration.
+*** Using External Variables to Implement a Stack
+To illustrate how external variables might be used, let’s look at a data structure known as a stack. (Stacks are an abstract concept, not a C feature; they can be implemented in most programming languages.) A stack, like an array, can store multiple data items of the same type. However, the operations on a stack are limited: we can either push an item onto the stack (add it to one end—the “stack top”) or pop it from the stack (remove it from the same end). Examining or modifying an item that’s not at the top of the stack is forbidden. One way to implement a stack in C is to store its items in an array, which we’ll call contents. A separate integer variable named top marks the position of the stack top. When the stack is empty, top has the value 0. To push an item on the stack, we simply store the item in contents at the position indicated by top, then increment top. Popping an item requires decrementing top, then using it as an index into contents to fetch the item that’s being popped.
+
+Based on this outline, here’s a program fragment (not a complete program) that declares the contents and top variables for a stack and provides a set of functions that represent operations on the stack. All five functions need access to the top variable, and two functions need access to contents, so we’ll make contents and top external.
+For my implementation on the whole program, please look at [[file:~/Projects/C/Books/Notes/Practice/10/stack.c][stack.c]]
+#+begin_src c
+#include <stdbool.h>
+#define STACK_SIZE 100
+/* external variables */
+int contents[STACK_SIZE];
+int top = 0;
+void make_empty(void)
+{
+  top = 0;
+}
+bool is_empty(void)
+{
+  return top == 0;
+}
+bool is_full(void)
+{
+  return top == STACK_SIZE;
+}
+{
+void push(int i)
+  if (is_full())
+    stack_overflow();
+  else
+    contents[top++] = i;
+}
+{
+int pop(void)
+if (is_empty())
+  stack_underflow();
+else
+  return contents[--top];
+}
+#+end_src

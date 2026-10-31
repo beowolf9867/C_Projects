@@ -1,0 +1,202 @@
+* Chapter 14: The Preprocessor
+** How it works?
+The preprocesor is controlled by preprocessing directives: commands that begin with a ~#~ character. The input to the preprocessor is a C program, possibly containing directives. The preprocessor executes these directives, removing them in the process. The output of the preprocessor is another C program: an edited version of the original program, containing no directives.
+** Preprocessing directives
+1. Macro definition
+   1. The ~#define~ directive defines a macro; the ~#undef~ directive removes a macro definition.
+2. File inclusion
+   1. The ~#include~ directive causes the contents of a specified file to be included in a program.
+3. Conditional compilation
+   1. The ~#if~, ~#ifdef~, ~#ifndef~, ~#elif~, ~#else~, and ~#endif~ directives allow blocks of text to be either included in or excluded from a program, depending on conditions that can be tested by the preprocessor.
+*** Some rules
+1. To continue a directive to the next line, we must end the current line with a ~\~ character.
+** Macro definitions
+*** Simple macros
+These have the following format: 
+#+begin_src C
+#define identifier replacement-list
+#+end_src
+*** Parameterised macros
+These have the following format: 
+#+begin_src C
+#define identifier( x1 , x2 , … , xn ) replacement-list
+#+end_src
+where ~x1~, ~x2~, …, ~xn~ are identifiers (the macro’s parameters). The parameters may appear as many times as desired in the replacement list.
+e.g.
+#+begin_src C
+#define MAX(x,y) ((x)>(y)?(x):(y))
+#+end_src
+will replace
+#+begin_src C
+i = MAX(j+k, m-n);
+#+end_src
+to this:
+#+begin_src C
+i = ((j+k)>(m-n)?(j+k):(m-n));
+#+end_src
+**** Disadvantages
+  1. It is not possible to have a pointer to a macro since they are removed upon compilation.
+**** Advantages
+  1. can be used to replace repeating functions.
+#+begin_src C
+#define PRINT_INT(n) printf("%d\n", n)
+//causing
+PRINT_INT(i/j);
+//to be replaced by
+printf("%d\n", i/j);
+#+end_src
+*** The ~#~ operator
+**** First use
+#+begin_src C
+#define PRINT_INT(n) printf(#n " = %d\n", n)
+#+end_src
+The # operator in front of n instructs the preprocessor to create a string literal from
+~PRINT_INT~ ’s argument, so
+#+begin_src C
+PRINT_INT(i/j);
+#+end_src
+becomes:
+#+begin_src C
+printf("i/j" " = %d\n", i/j);
+#+end_src
+which is eqivalent to:
+#+begin_src C
+printf("i/j = %d\n", i/j);
+#+end_src
+*** The ~##~ operator
+The ~##~ operator can /“paste”/ two tokens (identifiers, for example) together to form a single token.
+e.g.
+#+begin_src C
+#define MK_ID(n) i##n
+#+end_src
+combines ~i~ and ~n~
+#+begin_src C
+int MK_ID(1), MK_ID(2), MK_ID(3);
+#+end_src
+creating:
+#+begin_src C
+int i1, i2, i3;
+#+end_src
+**** Other use of it
+To avoid writing repeated functions over and over again
+#+begin_src C
+#define GENERIC_MAX(type) \
+  type type##_max(type x, type y)		\
+  {						\
+    return x > y ? x : y;			\
+  }
+#+end_src
+so when writing the following:
+#+begin_src C
+GENERIC_MAX(float)
+#+end_src
+we get:
+#+begin_src C
+float float_max(float x, float y) { return x > y ? x : y; }
+#+end_src
+*** General properties
+  1. A macro’s replacement list may contain invocations of other macros.
+  2. Idiom
+     1. for an ~if~ statement, ~while(0)~ makes it execute oncee.
+#+begin_src C
+#define ECHO(s)					\
+  do {						\
+    gets(s);					\
+    puts(s);					\
+  } while (0)
+#+end_src
+**** Predefined macros
+| Name     | Description                    |
+| ~__LINE__~ | line number of file            |
+| ~__FILE__~ | name of file                   |
+| ~__DATE__~ | date of comp.                  |
+| ~__TIME__~ | time of comp.                  |
+| ~__STDC__~ | 1 if compiler is to C89 or C99 |
+** Conditional Compilation
+The inclusion or exclusion of a section of program text depending on the outcome of a test performed by the preprocessor.
+*** The ~#if~ and ~#endif~ directives
+Start with a macro:
+#+begin_src C
+#define DEBUG 1
+#+end_src
+then put the test:
+#+begin_src C
+#if DEBUG
+printf("Value of i: %d\n", i);
+printf("Value of j: %d\n", j);
+#endif
+#+end_src
+During preprocessing, the #if directive will test the value of DEBUG.
+*** The ~defined~ operator
+~defined~ produces the value ~1~ if the identifier is a currently defined macro;
+#+begin_src C
+#if defined(DEBUG)
+#endif
+#+end_src
+checks if the macro ~DEBUG~ has a value, if not, the following is not compiled.
+*** The ~#ifdef~ and ~#ifndef~ Directives
+~#ifdef~ is equivalent to ~#if defined~
+#+begin_src C
+#ifndef identifier
+#+end_src
+equivalent to
+#+begin_src C
+#if !defined(identifier)
+#+end_src
+*** The ~#elif~ and ~#else~ Directives
+#+begin_src C
+#if expr1
+//Lines to be included if expr1 is nonzero
+#elif expr2
+//Lines to be included if expr1 is zero but expr2 is nonzero
+#else
+//Lines to be included otherwise
+#endif
+#+end_src
+*** Other uses of conditional compilation
+1. compilation on different platforms
+#+begin_src C
+#if defined(WIN32)
+#elif defined(MAC_OS)
+#elif defined(LINUX)
+#endif
+#+end_src
+2. providing check on macros
+#+begin_src C
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 256
+#endif
+#+end_src
+** Other directives
+*** The ~#error~ directives
+format:
+#+begin_src C
+#error message
+#+end_src
+e.g.:
+#+begin_src C
+#if INT_MAX < 100000
+#error int type is too small
+#endif
+#+end_src
+*** The ~#line~ directive
+1^st form:
+#+begin_src C
+#line n
+#+end_src
+2^nd form:
+#+begin_src C
+#line n "file"
+#+end_src
+*** The ~#pragma~ directive
+requests special behavior from the compiler.
+format:
+#+begin_src C
+#pragma tokens
+#+end_src
+**** The ~__Pragma~ operator
+format:
+#+begin_src C
+_Pragma ( string-literal )
+#+end_src
+The preprocessor /“destringises”/ the string literal by removing the double quotes around the string and replacing the escape sequences ~\~" and ~\\~ by the characters " and ~\~, respectively.

@@ -1,0 +1,64 @@
+* Chapter 16: Structures, Unions and Enumerations
+** Structure variables
+Declared in the following format:
+e.g.
+#+begin_src C
+struct {
+  int number;
+  char name[NAME_LEN+1];
+  int on_hand;
+} part1, part2;
+#+end_src
+*** Designated Initialisers
+e.g.
+#+begin_src C
+{.number = 528, .name = "Disk drive", .on_hand = 10}
+#+end_src
+** Structure types
+e.g.
+#+begin_src C
+typedef struct {
+  int number;
+  char name[NAME_LEN+1];
+  int on_hand;
+} Part;
+#+end_src
+*** Other example
+#+begin_src C
+struct person_name {
+  char first[FIRST_NAME_LEN+1];
+  char middle_initial;
+  char last[LAST_NAME_LEN+1];
+};
+#+end_src
+which can be used in a bigger struct
+#+begin_src C
+struct student {
+  struct person_name name;
+  int id, age;
+  char sex;
+} student1, student2;
+#+end_src
+so you can access elements
+#+begin_src C
+student.name.first
+#+end_src
+** Managing a parts database
+To illustrate how nested arrays and structures are used in practice, we’ll now
+develop a fairly long program that maintains a database of information about parts
+stored in a warehouse. The program is built around an array of structures, with
+each structure containing information—part number, name, and quantity—about
+one part. Our program will support the following operations:
+Add a new part number, part name, and initial quantity on hand. The pro-
+gram must print an error message if the part is already in the database or if the
+database is full.
+Given a part number, print the name of the part and the current quantity on
+hand. The program must print an error message if the part number isn’t in the
+database.
+Given a part number, change the quantity on hand. The program must print
+an error message if the part number isn’t in the database.
+Print a table showing all information in the database. Parts must be dis-
+played in the order in which they were entered.
+Terminate program execution
+We’ll use the codes i (insert), s (search), u (update), p (print), and q (quit) to rep-
+resent these operations. A session with the program might look like this:

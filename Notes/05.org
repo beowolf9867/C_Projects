@@ -1,0 +1,97 @@
+* Chapter Five: Selection Statements
+** 5.1: Logical Expressions
+*** Relational Operators
+| Symbol | Meaning                  |
+|--------+--------------------------|
+| <      | less than                |
+| >      | greater than             |
+| <=     | less than or equal to    |
+| >=     | greater than or equal to |
+*** Equality Operators
+| Symbol | Meaning      |
+|--------+--------------|
+| '=='   | equal to     |
+| '!='   | not equal to |
+*** Logical Operators
+| Symbol | Meaning            |
+|--------+--------------------|
+| '!'    | logical /negation/ |
+| '&&'   | logical /and/      |
+|        | logical /or/       |
+left associative - everything but ~!=~.
+** 5.2: The ~if~ statement
+e.g.
+#+begin_src C
+if ( expression ) statement
+#+end_src
+*** Compound statements
+#+begin_src C
+{ statements }
+#+end_src
+By putting braces around a group of statements, we can force the compiler to treat it as a single statement.
+#+begin_src C
+if ( expression )
+statement
+else if ( expression )
+statement
+…
+else if ( expression )
+statement
+else
+statement
+#+end_src
+*** Conditional Expressions
+#+CAPTION:  equivalent to “if ~expr1~ then ~expr2~ else ~expr3~" 
+#+begin_src C
+expr1 ? expr2 : expr3
+#+end_src
+e.g.
+#+begin_src C
+int i, j, k;
+
+i = 1;
+j = 2;
+k = i > j ? i : j; //k is now 2
+k = (i >= 0 ? i : 0) + j; // k is now 3
+#+end_src
+- for the first conditional,
+  - is ~i > j~?, if so then ~i~, else if it's not greater than ~j~, so ~k~ = ~j~, since ~i~ is not greater than ~j~.
+- for the second conditional
+  - is ~i~ greater than or equal to ~0~, if so then ~i~, if not then ~0~, and then plus ~j~. ~i~ is ~>~ so 1+2 = 3.
+*** Boolean values in ~C99~
+- A boolean variable can be declared by writing
+  #+begin_src C
+_Bool
+  #+end_src
+  - it is an unsigned integer type but can only be assigned ~0~ or ~1~
+**** More features
+#+begin_src C
+#include <stdbool.h>
+#+end_src
+** 5.3: The ~switch~ statement
+e.g.
+#+begin_src C
+switch (grade) {
+ case 4: printf("Excellent");
+   break;
+ case 3: printf("Good");
+   break;
+ case 2: printf("Average");
+   break;
+ case 1: printf("Poor");
+   break;
+ case 0: printf("Failing");
+   break;
+ default: printf("Illegal grade");
+   break;
+}
+#+end_src
+*** General format:
+#+begin_src C
+switch ( expression ) {
+ case constant-expression : statements
+    …
+ case constant-expression : statements
+ default : statements
+}
+#+end_src

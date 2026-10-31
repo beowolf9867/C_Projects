@@ -1,0 +1,96 @@
+* Chapter Four: Expressions
+** Arithmetic Expressions
+*** Implementation-defined behaviour
+The C standard deliberately leaves part of the language unspecified, so the /implementation/ (the software needed to compile, link and execute programmes) will fill in the details. Therefore, the programmes' behaviour could vary from one implementation to another.
+**** Simple UPC programme
+#+begin_src C
+  /* Computes a Universal Product Code check digit */
+  #include <stdio.h>
+  int main(void)
+   {
+    int d, i1, i2, i3, i4, i5, j1, j2, j3, j4, j5,
+    first_sum, second_sum, total;
+    printf("Enter the first (single) digit: ");
+    scanf("%1d", &d);
+    printf("Enter first group of five digits: ");
+    scanf("%1d%1d%1d%1d%1d", &i1, &i2, &i3, &i4, &i5);
+    printf("Enter second group of five digits: ");
+    scanf("%1d%1d%1d%1d%1d", &j1, &j2, &j3, &j4, &j5);
+    first_sum = d + i2 + i4 + j1 + j3 + j5;
+    second_sum = i1 + i3 + i5 + j2 + j4;
+    total = 3 * first_sum + second_sum;
+    printf("Check digit: %d\n", 9 - ((total - 1) % 10));
+    return 0;
+   }
+#+end_src
+** 4.2: Assignment Operators
+*** Side effects
+ - Some operat-~ors~ affect the oper-~ands~.
+    - These, we say have *side effects*, since they do more than just compute a value.
+      - e.g. The simple assignment operator is the first operator we’ve seen that has side effects; it modifies its left operand. Evaluating the expression ~i = 0~ produces the result ~0~ and, as a side effect, assigns ~0 to i~.
+ - The ~=~ operator is /right/ associative.
+   - e.g. ~i = j = k = 0;~ is equal to ~i = (j = (k = 0));~
+     - Essentially, 0 is assigned first to k, then to j, and finally to i.
+       - Because of this, there are unexpected results in /chained/ assignments.
+e.g. 
+#+begin_src C
+int i;
+float f;
+f = i = 33.3f;
+#+end_src
+/i is assigned the value 33, then f is assigned 33.0 (not 33.3, as you might think)./
+*** Lvalues
+    - The assignment operator requires an *lvalue* as its left operand.
+      - So far, only /variables/ are *lvalues*. 
+If this is not followed:
+#+begin_src shell
+The compiler will detect errors of this nature, and you’ll get an error message such
+as “invalid lvalue in assignment.”
+#+end_src
+*** Compound Assignment
+ It is common to re-use an old value of a variable to compute its new value,
+    - e.g.
+      #+begin_src C
+i = i + 2;
+      #+end_src 
+      - which can be made simpler by using C's *compound assignment* operators.
+        - e.g.
+          #+begin_src C
+i += 2; 
+          #+end_src
+- The following are more *compound assignments*:
+  | Operator | What it does.                                                          |
+  |----------+------------------------------------------------------------------------|
+  | v += e   | adds v to e, storing the result in v                                   |
+  | v -= e   | subtracts e from v, storing the result in v                            |
+  | v *= e   | multiplies v by e, storing the result in v                             |
+  | v /= e   | divides v by e, storing the result in v                                |
+  | v %= e   | computes the remainder when v is divided by e, storing the result in v |
+- These are also /right associative/.
+  #+begin_src C
+i += j += k;
+means
+i += (j += k);
+  #+end_src
+** 4.3: Increment and Decrement Operators
+- ~++i~ means "increment ~i~ immediately" while ~i++~ means “use the old value of i for now, but increment ~i~ later.” How much later? The C standard doesn’t specify a precise time, but it’s safe to assume that ~i~ will be incremented before the next statement is executed.
+- higher precedence than /unary/ operators.
+- /left/ associative.
+** 4.4: Expression Evaluation
+#+CAPTION: A list of the C operators looked at so far:
+| Precedence | Name                | Symbol(s) | Associativity |
+|------------+---------------------+-----------+---------------|
+|          1 | increment (postfix) | ++        | left          |
+|          1 | decrement (postfix) | --        | left          |
+|          2 | increment (prefix)  | ++        | right         |
+|          2 | decrement (prefix)  | --        | right         |
+|          2 | unary plus          | +         | right         |
+|          2 | unary minus         | -         | right         |
+|          3 | multiplicative      | *         | left          |
+|          4 | additive            | +         | left          |
+|          5 | assignment          |           | right         |
+$E = mc^2$ for the equation for energy for when it equals $mc^2$.
+another example is the use of
+$\frac{1}{2}$
+
+

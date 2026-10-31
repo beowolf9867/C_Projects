@@ -1,0 +1,200 @@
+* Chapter 17: Advanced use of pointers
+** Dynamic Storage Allocation
+Three functions are declared in the ~<stdlib.h>~ header.
+#+begin_src C
+  malloc(); // allocates a block of memory but does not initalise it
+  calloc(); // allocates a block of memory and clears it
+  realloc(); //resizes a previously allocated block of memory
+#+end_src
+All three of these functions return a ~void *~ since they do not know what kind of memory they are allocating.
+*** Null pointer
+If the function can not find a memory to allocate, it will return a /null pointer/ - a pointer to nothing, represented by a macro /NULL/.
+#+begin_src C
+    if ((p = malloc(10000)) == NULL) {
+      /* allocation failed; take appropriate action */
+  }
+#+end_src
+** Dynamically Allocated Strings
+*** Using ~malloc~ to allocate memory for a string
+#+begin_src C
+  void *malloc(size_t size);
+#+end_src
+To allocate space for a string of n characters, we’d write
+#+begin_src C
+  p = (char *) malloc(n + 1);
+#+end_src
+to account for the ~NULL~ charracter.
+*** Using dynamic storage allocation in string functions
+#+begin_src C
+  char *concat(const char *str1, const char *str2) {
+    char *result;
+    result = malloc(strlen(s1) + strlen(s2) + 1);
+    if (result == NULL)
+      printf("Error: malloc failed\n");
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result; 
+  }
+#+end_src
+*** Arrays of dynamically allocated strings
+See the file [[file:~/Projects/C/Books/Notes/Practice/17/remind.c][remind.c]]
+The original remind.c program stores the reminder strings in a two-dimensional
+array of characters, with each row of the array containing one string. After the pro-
+gram reads a day and its associated reminder, it searches the array to determine
+where the day belongs, using strcmp to do comparisons. It then uses strcpy to
+move all strings below that point down one position. Finally, the program copies
+the day into the array and calls strcat to append the reminder to the day.
+In the new program (remind2.c), the array will be one-dimensional; its ele-
+ments will be pointers to dynamically allocated strings. Switching to dynamically
+allocated strings in this program will have two primary advantages. First, we can
+use space more efficiently by allocating the exact number of characters needed to
+store a reminder, rather than storing the reminder in a fixed number of characters
+as the original program does. Second, we won’t need to call strcpy to move
+existing reminder strings in order to make room for a new reminder. Instead, we’ll
+merely move pointers to strings.
+** Linked Lists
+A linked list consists of a chain of structures (called nodes), with each node containing a pointer to the next node in the chain, the last node in the list contains a null pointer. It is an alternative to an array, and has the advantage of being able to easily add and remove nodes, but with a disadvantage of taking more time to access certain nodes near the end of the list.
+To setup a linked list:
+*** Declaring a node type
+Declare a structure that represents a single node in the list.
+e.g. the following node contains an integer (the node’s data) with a pointer to the next node.
+#+begin_src C
+struct node {
+  int value;
+  struct node *next;
+};
+#+end_src
+Now declare a pointer to the first node in the list.
+e.g. ~NULL~ indicates the list is currently empty.
+#+begin_src C
+struct node *first = NULL;
+#+end_src
+NOTE: The pointer to the next node is of type ~struct node *~. 
+*** Creating a node
+Three steps are required:
+1. Allocate memory for the node.
+2. Store data into the node.
+3. Insert the node into the list.
+e.g. when creating the node, we need a variable to point to it temporarily, calling it ~new_node~, and then allocating memory for it, returning the value to ~new_node~.
+#+begin_src C
+struct node *new_node;
+new_node = malloc(sizeof(struct node));
+#+end_src
+Now store the data in the ~value~ member of the node:
+e.g.
+#+begin_src C
+(*new_node).value = 10;
+#+end_src
+or we could use the ~right arrow selection~
+#+begin_src C
+new_node->value = 10;
+#+end_src
+Inserting a node at the beginning of the list:
+e.g. let the next node point to the first
+#+begin_src C
+new_node->next = first;
+first = new_node;
+#+end_src
+*** Creating a function to implement thiss
+#+begin_src C
+struct node *add_to_list(struct node *list, int n) {
+	struct node *new_node;
+	
+	new_node = malloc(sizeof(struct node));
+	if (new_node == NULL) {
+		printf("Error\n");
+		exit(EXIT_FAILURE); //defined in stdlib.h
+	}
+	new_node->value = n;
+	new_node->next = list;
+	return new_node; //returns pointer to the address of the node
+}
+#+end_src
+We can see this implemented in an example function:
+#+begin_src C
+struct node *first = NULL;
+first = add_to_list(first, n);
+#+end_src
+*** Searching a linked list
+Using a ~for()~ loop is preferred here:
+e.g. using ~p = p->next~ to advance the pointer to the next node.
+#+begin_src C
+struct node *search_list(struct node *list, int n) {
+  struct node *p; //the pointer used to advance
+    for (p = list; p != NULL; p = p->next)
+      if (p->value == n)
+       return list;
+      return NULL;
+}
+#+end_src
+*** Deleting a node from a linked list
+Requires three steps:
+1. locate node to be deleted
+2. 
+3. call ~free~ to reclaim the space
+e.g. step 1, where ~cur~ and ~prev~ are pointers to the current and previous positions respectively
+#+begin_src C
+for (cur = list, prev = NULL; cur != NULL && cur->value != n; prev = cur, cur = cur->next)
+	 ;
+#+end_src
+where line 1: setting ~cur~ to the first point in ~list~, ~prev~ to ~NULL~,
+line 2: while ~cur~ is not ~NULL~ and the value is not ~n~,
+line 3: set ~prev~ to ~cur~ and increment cur.
+e.g. step 2, where we make ~prev~ point to the position after the node being deleted.
+#+begin_src C
+prev->next = cur->next;
+#+end_src
+e.g. step 3, where we release memory from the node we wish to delete, ~cur~
+Below is everything we have done combined:
+#+begin_src C
+struct node *delete_from_list(struct node *list, int n) {
+  struct node *cur, *prev;
+  for (cur = list, prev = NULL; cur != NULL && cur->value != n; prev = cur, cur = cur->next)
+	 ;
+  if (cur == NULL)
+    return list; // n not found
+	if (prev == NULL)
+	  list  = list->next; //the first node, requires a special case.
+	else 
+	  prev->next = cur->next;
+	free(cur);
+	return list;
+}
+#+end_src
+*** Ordered lists
+When the nodes of a list are kept in order, advantages being the faster search but with the increased difficulty of inserting a node.
+** Pointers to pointers
+e.g. rewriting the ~add_to_list~ function
+#+begin_src C
+void add_to_list(struct node **list, int n)
+{
+ struct node *new_node;
+ new_node = malloc(sizeof(struct node));
+ if (new_node == NULL) {
+ printf("Error: malloc failed in add_to_list\n");
+ exit(EXIT_FAILURE);
+ }
+ new_node->value = n;
+ new_node->next = *list;
+ *list = new_node;
+}
+#+end_src
+** Pointers to functions
+*** Function pointers as arguments
+e.g.
+#+begin_src C
+double integrate(double (*f)(double), double a, double b);
+#+end_src
+is equivalent to
+#+begin_src C
+double integrate(double f(double), double a, double b);
+#+end_src
+whereby we are passing a function as an argument to another function.
+e.g. To call this function, noting the lack of parantheses around the function.
+#+begin_src C
+result = integrate(sin, 0.0, PI/2);
+#+end_src
+e.g. to use the function in ~integrate~, where ~*f~ represents the function.
+#+begin_src C
+y = (*f)(x);
+#+end_src

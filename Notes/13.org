@@ -1,0 +1,162 @@
+* Chapter 13: Strings
+** String literals
+A string literal is a sequence of characters enclosed within double quotes. String literals are character arrays with a null terminator at the end, represented by the ~'\0'~ escape sequence /(ascii code '0')/. Treated as a pointer of type ~char~. The function ~printf()~ recieves a pointer to the first element in the array.
+*** Character constants
+~'a'~ is a character constant - represented by an integer. ~"a"~ is a string literal - represented by a pointer to a memory location that contains the character ~a~ (followed by a null character).
+** String variables
+#+begin_src C
+#define STR_LEN 80
+char str[STR_LEN+1];
+#+end_src
+Extra null characters are added to the end if the whole string length is not used.
+#+begin_src C
+char date1[8] = "June 14";
+#+end_src
+is equivalent to
+#+begin_src C
+char date1[8] = {'J', 'u', 'n', 'e', ' ', '1', '4', '\0'};
+#+end_src
+creates a string and an initialised pointer. the pointer points to the first element of the array.
+#+begin_src C
+char str[STR_LEN+1], *p;
+p = str;
+#+end_src
+** Reading and Writing strings
+*** Writing strings using ~printf~ and ~puts~
+The ~%ms~ conversion will display a string in a field of size ~m~. (A string with more than m characters will be printed in full, not truncated.) If the string has fewer than ~m~ characters, it will be right-justified within the field. To force left justification instead, we can put a
+minus sign in front of ~m~. To print just part of a string, we can use the conversion specification ~%.ps~, where ~p~ is the number of characters to be displayed.
+*** Reading strings using ~scanf~ and ~gets~
+~gets~ function reads input characters into an array, then stores a null character.
+  1. doesn’t skip white space before starting to read the string.
+  2. reads until it finds a new-line character (~scanf~ stops at any white-space character). Incidentally, ~gets~ discards the new-line character instead of storing it in the array; the null character takes its place.
+*** Reading strings character by character
+Three questions on writing your own:
+  1. Should the function skip white space before beginning to store the string?
+  2. What character causes the function to stop reading: a new-line character, any white-space character, or some other character? Is this character stored in the string or discarded?
+  3. What should the function do if the input string is too long to store: discard the extra characters or leave them for the next input operation?
+Using the following requirements,
+  1. yes, skip whitespace
+  2. ~'\n'~ should make the function to stop reading, discarded.
+  3. discard the extra characters
+#+begin_src C
+#include <stdio.h>
+
+int read_line(char str[], int n) {
+  int ch, i = 0;
+  while ((ch = getchar()) != '\n')
+    if (i < n)
+      str[i++] = ch;
+  str[i] = '\0';
+  return i;
+}
+#+end_src
+*** Accessing the characters in a string
+#+begin_src C
+#include <string.h>
+#+end_src
+includes alot of ~string~ functions.
+** String functions
+*** String copy
+#+begin_src C
+char *strcpy(char *s1, const char *s2);
+#+end_src
+~strcpy~ copies the string ~s2~ into the string ~s1~. (To be precise, we should say “~strcpy~ copies the string pointed to by ~s2~ into the array pointed to by ~s1~.”)
+#+begin_src C
+strcpy(str2, "abcd"); /* str2 now contains "abcd" */
+#+end_src
+~strncpy~ copies, but has a third argument specifying the number of characters.
+#+begin_src C
+strncpy(str1, str2, sizeof(str1));
+#+end_src
+safer way to use it:
+#+begin_src C
+strncpy(str1, str2, sizeof(str1) - 1);
+str1[sizeof(str1)-1] = '\0';
+#+end_src
+The second statement guarantees that str1 is always null-terminated, even if ~strncpy~ fails to copy a null character from str2.
+*** String length
+following prototype:
+#+begin_src C
+size_t strlen(const char *s);
+#+end_src
+~size_t~, pre-defined in C-library is a ~typedef~ name representing unsigned integer types - can treat it as an integer, returning the length of the string ~s~ - the number of characters in ~s~ up to,
+but not including, the first null character.
+*** String concatenation
+following prototype:
+#+begin_src C
+char *strcat(char *s1, const char *s2);
+#+end_src
+~strcat~ appends the contents of the string ~s2~ to the end of the string ~s1~; it returns ~s1~ (a pointer to the resulting string).
+can use ~strncat~
+#+begin_src C
+strncat(str1, str2, sizeof(str1) - strlen(str1) - 1);
+#+end_src
+*** String comparison
+following prototype:
+#+begin_src C
+int strcmp(const char *s1, const char *s2);
+#+end_src
+~strcmp~ compares the strings ~s1~ and ~s2~, returning a value less than, equal to, or greater than 0, depending on whether ~s1~ is less than, equal to, or greater than ~s2~.
+~s1~ considered to be less than ~s2~ if
+  1. The first ~i~ characters of ~s1~ and ~s2~ match, but the ~(i+1)~ st character of ~s1~ is less than the ~(i+1)~ st character of ~s2~. For example, ~"abc"~ is less than ~"bcd"~, and ~"abd"~ is less than ~"abe"~.
+  2. All characters of ~s1~ match ~s2~, but ~s1~ is shorter than ~s2~. For example, ~"abc"~ is less than ~"abcd"~.
+and the following comparisons:
+  1. The characters in each of the sequences A–Z, a–z, and 0–9 have consecutive codes.
+  2. All upper-case letters are less than all lower-case letters. (In ASCII, codes between 65 and 90 represent upper-case letters; codes between 97 and 122 represent lower-case letters.)
+  3. Digits are less than letters. (Codes between 48 and 57 represent digits.) Spaces are less than all printing characters. (The space character has the value 32 in ASCII.)
+*** Convert to string
+~sprintf~ has the following prototype:
+#+begin_src C
+sprintf(day_str, "%2d", day);
+#+end_src
+writes output into string form.
+** String idioms
+*** Searching for end of string
+#+begin_src C
+size_t strlen(const char *s)
+{
+  const char *p = s;
+  while (*s)
+    s++;
+  return s - p;
+}
+#+end_src
+*** Copying a string
+#+begin_src C
+char *strcat(char *s1, const char *s2)
+{
+  char *p = s1;
+  while (*p)
+    p++;
+  while (*p++ = *s2++)
+    ;
+  return s1;
+}
+#+end_src
+** Arrays of strings
+when forming an array of strings,
+#+begin_src C
+char *planets[] = {"Mercury", "Venus", "Earth",
+		   "Mars", "Jupiter", "Saturn",
+		   "Uranus", "Neptune", "Pluto"};
+#+end_src
+Each element of planets is a pointer to a null-terminated string
+** Command line arguments
+#+begin_src C
+int main(int argc, char *argv[])
+{
+}
+#+end_src
+~argc~ (“argument count”) is the number of command-line arguments (including the name of the program itself). ~argv~ (“argument vector”) is an array of pointers to the command-line arguments, which are stored in string form. ~argv[0]~ points to the name of the program, while ~argv[1]~ through ~argv[argc-1]~ point to the remaining command-line arguments.
+can either do:
+#+begin_src C
+int i;
+for (i = 1; i < argc; i++)
+  printf("%s\n", argv[i]);
+#+end_src
+or
+#+begin_src C
+char **p;
+for (p = &argv[1]; *p != NULL; p++)
+  printf("%s\n", *p);
+#+end_src

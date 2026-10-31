@@ -1,0 +1,47 @@
+* Chapter Two
+** Writing a Simple program
+*** Compiling and Linking
+**** Preprocessing
+   - The program is first given to a *preprocessor*, which obeys commands that begin with ~#~ /(known as directives)/. A *preprocessor* is a bit like an editor; it can add things to the program and make modifications.
+   - Substitutes the line with the file that it references.
+**** Compiling
+   - The modified program now goes to a *compiler*, which translates it into /machine instructions/ (object code). The program isn’t quite ready to run yet, however.
+**** Linking
+  - In the final step, a *linker* combines the /object code/ produced by the *compiler* with any additional code needed to yield a complete executable program. This additional code includes /library functions/ (like ~printf~) that are used in the program
+** General form of a simple program
+*** Directives
+[[https://gcc.gnu.org/onlinedocs/cpp.pdf][C pre-processor manpages]]
+  - Before a C program is compiled, it is first edited by a *pre-processor*, which look for *directives* /commands that are intended for the pre-processor/ (see [[file:14.org][Chapter 14]] for more).
+**** ~#include~ directive
+e.g.
+#+begin_src C
+#include <stdio.h>
+#+end_src
+*** Functions
+  - Only the ~main()~ function is mandatory.
+*** Statements
+  - A *statement* is a command to be executed when the program runs.
+*** Variables and Assignments
+**** Types
+   - specifies what kind of /data/ the *variable* holds.
+   - The type of a numeric variable determines the largest and smallest numbers that the variable can store; it also determines whether or not digits are allowed after the decimal point.
+** Functions
+*** Formatting functions
+**** scanf()
+   - A predefined function that reads a value and then stores it into a variable.
+#+begin_src C
+scanf("%d", %i); // reads an integer stores into i
+#+end_src
+**** printf()
+    - A predefined function that prints out the result of the string.
+#+begin_src C
+volume = height * length * width;
+printf("%d\n", volume); // the result of volume = height*length*width, so that is printed.
+#+end_src
+**** MACRO definitions
+   - #define is a preprocessing directive, just as #include is, so there’s no semicolon at the end of the line.
+   - When a program is compiled, the preprocessor replaces each macro by the value that it represents
+#+begin_src C
+#define RECIPROCAL_OF_PI (1.0f / 3.14159f) //any mention of RECIPROCAL_OF_PI will be replace by 1/3.14...
+#+end_src
+       

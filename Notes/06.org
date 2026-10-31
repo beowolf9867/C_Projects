@@ -1,0 +1,67 @@
+* Chapter Six
+** 6.1 : The ~while~ statement
+#+begin_src C
+while ( expression ) statement
+#+end_src
+- The /expression/ is a *controlling* expression.
+- And the /statement/ is the *loop* body.
+*** What happens?
+ - When a ~while~ loop is executed,
+   - the /controlling expression/ is evaluated *first*.
+     - if its value is ~1~ or any non ~0~ value then,
+       - the /loop body/ is executed
+       - and the /controlling expression/ is evaluated again.
+ - This continues until the /controlling expression/ has a value of ~0~.
+*** Infinite loops
+- When the /controlling expression/ is always ~true~.
+e.g.
+#+begin_src C
+while (1) ...
+#+end_src
+** 6.2: The ~do~ statement
+e.g.
+#+begin_src C
+do statement while ( expression );
+#+end_src
+- same as the ~while~ statement, however the /controlling expression/ is evaluated after.
+** The ~for~ statement
+e.g.
+#+begin_src C
+for ( expr1 ; expr2 ; expr3 ) statement
+#+end_src
+- You are able to not include the ~exp1~, ~exp2~ or even ~exp3~, so to create an infinite loop:
+#+begin_src C
+for (;;) ...
+#+end_src
+*** The comma (  ~,~  ) operator
+#+begin_src C
+expr1 , expr2
+#+end_src
+**** How is it evaluated?
+  - ~exp1~ is evaluated /first/ and then its value is discarded.
+  - Then, ~exp2~ is evaluated, whose value is the value of the whole expression.
+    - Therefore, ~exp1~ should have a side-effect when evaluating, otherwise ~exp1~ serves *no* purpose.
+  e.g. Here we can see the ~i~ being incremented before, being added to ~j~.
+#+begin_src C
+++i, i + j;
+#+end_src
+- The /comma/ operand is *left-* associative.
+** 6.4: Exiting from a loop 
+*** The ~break~ statement
+-  A break statement transfers control out of the /innermost/ enclosing ~while~, ~do~, ~for~, or ~switch~ statement.
+  - only transfers control from *one* level of nesting.
+*** The ~continue~ statement
+- ~continue~ transfers control to a point just /before/ the end of the loop body.
+  - ~continue~ is limited to loops. 
+*** The ~goto~ statement
+- can jump to any statement, provided it has a /label/.
+  A label can be defined as an /identifier/ placed at the *start* of a /statement/.
+#+begin_src C
+identifier: statement
+#+end_src
+- The syntax of a ~goto~ statement is as follows:
+#+begin_src C
+goto identifier ;
+#+end_src
+*** The ~null~ statement
+- A statement devoid of symbols except for the ~;~ at the end.

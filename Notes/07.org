@@ -1,0 +1,100 @@
+* Chapter Seven
+** Integer types
+*** Signed and Unsigned Integers
+** Reading and Writing characters
+*** putchar(ch)
+writes a single character
+*** getchar(ch)
+reads a single character which it returns.
+e.g.
+#+begin_src C
+ch = getchar(); //reads a character and stores it in ch
+#+end_src
+can be used to replace scanf()
+e.g.
+#+begin_src C
+do {
+  scanf("%c", &ch);
+} while (ch != '\n');
+#+end_src
+can be rewritten as
+#+begin_src C
+do {
+  ch = getchar();
+} while (ch != '\n';
+#+end_src
+**** Warning
+Be careful if you mix ~getchar~ and ~scanf~ in the same program. ~scanf~ has a
+tendency to leave behind characters that it has “peeked” at but not read, including
+the new-line character. Consider what happens if we try to read a number first, then
+a character:
+#+begin_src C
+printf("Enter an integer: ");
+scanf("%d", &i);
+printf("Enter a command: ");
+command = getchar();
+#+end_src
+The call of ~scanf~ will leave behind any characters that weren’t consumed during
+the reading of ~i~, including (but not limited to) the new-line character. ~getchar~ will fetch the first leftover character, which wasn’t what we had in mind.
+***** Explanation
+When you type an integer and press Enter, you are actually putting two things into the buffer:
+  1. The digits of the number (e.g., 4 and 2).
+  2. The newline character (\n) from the Enter key.
+~scanf("%d", &i)~ is designed to look for digits. It consumes the ~42~, but once it sees the ~\n~, it stops. Crucially, it leaves that ~\n~ sitting right at the front of the buffer. When ~getchar()~ is called immediately after, it doesn't wait for new input; it looks at the buffer, sees the leftover ~\n~, and consumes it instantly. To the user, it looks like the program skipped the second prompt.
+** Type conversion
+There are two types of conversions, one /implicit/ and one /explicit/.
+*** Implicit
+These are usually performed in the following scenarios:
+  - When the operands in an arithmetic or logical expression don’t have the same
+type. /the usual arithmetic conversions/
+  - When the type of the expression on the right side of an assignment doesn’t
+match the type of the variable on the left side.When the type of an argument in a function call doesn’t match the type of the corresponding parameter.
+  - When the type of the expression in a return statement doesn’t match the function’s return type
+**** The usual arithmetic conversions
+- ensure to be careful when mixing both unsigned and signed integers
+  e.g.
+#+begin_src C
+int x = -10;
+unsigned int y = 10;
+#+end_src
+~x~ appears to be less than ~y~, however, ~C~ converts ~x~ to an unsigned integer, thus the largest ~unsigned int~ value is added to the ~-10~ giving a value bigger than the value of ~y~, which is unexpected.
+Below are common conversions:
+#+begin_src C
+char c;
+short int s;
+int i;
+unsigned int u;
+long int l;
+unsigned long int ul;
+float f;
+double d;
+long double ld;
+i = i + c; //c is converted to int
+i = i + s; //s is converted to int
+u = u + i; //i is converted to unsigned int
+l = l + u;// u is converted to long int
+ul = ul + l;//l is converted to unsigned long it
+f = f + ul;//ul is converted to float
+d = d + f;//f is converted to double
+ld = ld + d;// d is converted to long double
+#+end_src
+Additionally, in ~C~, if the variable’s type is at least as “wide” as the expression’s, then the
+expression on the right side of the assignment is converted to the type of the variable on the left side
+**** C99 specialties
+Below is the rank
+  1. long long int, unsigned long long int
+  2. long int, unsigned long int
+  3. int, unsigned int
+  4. short int, unsigned short int
+  5. char, signed char, unsigned char
+  6. _Bool
+*** Type definitions
+#+begin_src C
+typedef float Dollars;
+Dollars cash_in, cash_out;
+#+end_src
+is the same thing as
+#+begin_src C
+float cash_in, cash_out;
+#+end_src
+making the definitions easier to modify, should we need to.

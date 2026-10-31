@@ -1,0 +1,61 @@
+* Chapter Three: Formatted Input/Output
+** Conversion specifications
+- A /conversion specification/ can have the form ~%m.pX~ or ~%-m.pX~
+  - where ~m~ and ~p~ are integer constants,
+  - and ~X~ is a letter.
+- Both ~M~ and ~p~ are optional and if ~p~ is omitted, the ~.~ that was separating ~m~ and ~p~ is dropped.
+  - For example, ~%10.2f~,
+    - ~m~ = 10,
+    - ~p~ = 2 and
+    - ~X~ = f.
+  - For ~%10f~,
+    - ~m~ = 10,
+    - ~p~ = missing and 
+    - ~.~ = missing.
+  - For ~%.2f~,
+    - ~m~ = missing and
+    - ~p~ = 2.
+- The minimum field width ~m~ specifies: the /minimum/ number of characters to print.
+  - If the value to be printed requires fewer than ~m~ characters, the value is /right-justified/ within the field.
+    - /extra words precede the value/.
+      - For example, ~%4d~ would display the number ~123~ as  ~•123~, /where ~•~ represents the space character./
+  - If the value to be printed requires more than ~m~ characters, the field width automatically expands to the necessary size.
+    - For example, ~%4d~ would display the number ~12345~ as ~12345~ /with no digits lost/.
+  - Putting a minus sign infront of it causes /left justification,
+    - for example ~%-4d~ would display the number ~123~ as ~123•~.       
+- The precision ~p~ depends on the choice of ~X~ /the conversion specifier/.
+- ~X~ indicates which conversion should be applied to the value before it's printed, the most common being:
+  - ~d~
+    - displays an integer in decimal /base 10/ form.
+      - ~p~ indicates the /minimum/ number of digits to display (extra zeroes are added to beginning if necessary).
+        - if ~p~ is omitted, assumed to have ~1~.
+          - e.g. ~%d~ = ~%.1d~
+- ~e~
+  - displays a /floating-point number/ in exponential format (/scientific notation/).
+    - ~p~ indicates how many digits should appear after the decimal point (the default is ~6~).
+      - If ~p~ is 0, the /decimal point/ is not displayed.
+- ~f~
+  - displays a /floating-point number/ in "fixed decimal" format, without an exponent.
+    - ~p~ has the same meaning as for the ~e~ specifier.
+- ~g~
+  - displays a /floating-point number/ in either exponential format or fixed decimal format depending on the number's size.
+    - ~p~ indicates the maximum number of significant digits (/digits before the decimal point/)
+      - Trailing zeroes will not be shown.
+        - If the value to be printed has no digits after the decimal point, ~g~ doesn't display the decimal point.
+          - Useful for displaying numbers whose size can't be predicted when the programme is written.
+            - When printing a small number, the ~g~ specifier uses /fixed decimal format/.
+            - When printing a large number, the ~g~ specifier uses /exponential format/ so the number requires fewer characters.
+** Escape Sequences
+- An /escape sequence/ enable strings to contain characters that would otherwise cause problems for the compiler, including nonprinting (control) characters and characters that have a special meaning to the compiler (such as ").
+  - Here is a sample of some:
+   | Name            | Command | Explanation                            |
+   |-----------------+---------+----------------------------------------|
+   | Alert           | \a      | audible beep                           |
+   | Backspace       | \b      | moves cursor back one space            |
+   | New line        | \n      | moves cursor to new line               |
+   | Horizontal tab  | \t      | moves cursor to next tab stop          |
+   | Speech marks    | \"      | allowing the use of " within functions |
+   | One \ character | \\      | allowing the print of one \ character  |
+** Scanf function
+Skips white space characters.
+ 

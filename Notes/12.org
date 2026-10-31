@@ -1,0 +1,86 @@
+* Chapter 12: Pointers and Arrays
+** Pointer Arithmetic
+Only three forms of pointer arithmetic are supported in C:
+  1. Adding an integer to a pointer
+  2. Subtracting an integer from a pointer
+  3. Subtracting one pointer from another
+*** Adding an integer to a pointer
+Adding an integer ~j~ to a pointer ~p~ yields a pointer to the element ~j~ places after the one that ~p~ points to. More precisely, if ~p~ points to the array element ~a[i]~, then ~p~ + ~j~ points to ~a[i+j]~ (provided, of course, that ~a[i+j]~ exists).
+e.g.
+#+begin_src c
+p = &a[2]; //line 1
+q = p + 3; //line 2
+p += 6;    //line 3
+#+end_src
+Line 1 declares that address 2 of the ~a~ array is pointed to by ~p~. Line 2 then states that address 5 of the ~a~ array is pointed to by ~q~ and line 3 says that address 8 of the ~a~ array is pointed to by ~p~, not address 2 anymore.
+*** Subtracting an integer from a pointer
+If p points to the array element a[i], then p - j points to a[i-j].
+e.g.
+#+begin_src c
+p = &a[8]; //line 1
+q = p - 3; //line 2
+p -= 6;    //line 3
+#+end_src
+Line 1 - ~p~ is at address 8, line 2 - ~q~ is at address 5, line 3 - ~p~ is now at address 2.
+*** Subtracting one pointer from each other
+When one pointer is subtracted from another, the result is the distance (measured in array elements) between the pointers. Thus, if ~p~ points to ~a[i]~ and q points to ~a[j]~, then ~p~ - ~q~ is equal to ~i~ - ~j~.
+e.g.
+#+begin_src c
+p = &a[5]; //line1
+q = &a[1]; //line 2
+i = p - q; //line 3
+j = q - p; //line 4
+#+end_src
+Line 1 - ~p~ at address 5, line 2 - ~q~ at address 1, line 3 - ~i~ = 4, line 4 - ~j~ = -4
+** Using pointers for array processing
+Pointer arithmetic allows us to visit the elements of an array by repeatedly incrementing a pointer variable.
+e.g.
+#+begin_src c
+#define N 10
+int a[N], sum, *p;
+sum = 0;
+for (p = &a[0]; p < &a[N]; p++)
+  sum += *p;
+#+end_src
+** Combining the ~*~ and ~++~ operators
+We might write:
+#+begin_src c
+a[i++] = j;
+#+end_src
+as
+#+begin_src c
+*p++ = j;
+#+end_src
+which the compiler views as
+#+begin_src c
+*(p++) = j;
+#+end_src
+because the postfix version of ~++~ takes precedence over ~*~.
+The following table summarises the operations:
+| Expression     | Meaning                                                        |
+|----------------+----------------------------------------------------------------|
+| *p++ or *(p++) | Value of expression is *p before increment; increment p later  |
+| (*p)++         | Value of expression is *p before increment; increment *p later |
+| *++p or *(++p) | Increment p first; value of expression is *p after increment   |
+| ++*p or ++(*p) | Increment *p first; value of expression is *p after increment  |
+This is useful as a shorthand for the following for loop:
+#+begin_src c
+for (p = &a[0]; p < &a[N]; p++)
+  sum += *p;
+#+end_src
+as:
+#+begin_src c
+p = &a[0];
+while (p < &a[N])
+  sum += *p++;
+#+end_src
+
+Now look back at the stack example in /[[file:10.org][10.2]]/
+** Extra
+A pointer is simply a normal variable that holds the address of something else as its value. In other words, a pointer points to the address where something else can be found. Where you normally think of a variable holding an immediate values, such as ~int i = 40;~, a pointer (e.g. ~int *p = &i;~) would simply hold the address where 40 is stored in memory.
+If you need the value stored at the memory address ~p~ points to, you dereference ~p~ using the unary ~'*'~ operator, e.g. ~int j = *p;~ will initialise ~j = 40~).
+Since ~p~ points to the address where 40 is stored, if you change that value at that address (e.g. ~*p = 41;~) 41 is now stored at the address where 40 was before. Since ~p~ points to the address of ~i~ and you have changed the value at that address, ~i~ now equals 41. However ~j~ resides in another memory location and its value was set before you changed the value at the address for ~i~, the value for ~j~ remains 40.
+If you want to create a second pointer (e.g. ~int *k;~) you are just creating another variable that holds an address as its value. If you want ~k~ to reference the same address held by ~p~ as its value, you simply initialise ~k~ the same way you would intialise any other variable by assigning its value when it is declared, e.g. ~int *k = p;~ (which is the same as assigning ~k = p;~ at some point after initialisation).
+Pointer arithmetic works the same way regardless of the type of object pointed to because the type of the pointer controls the pointer arithmetic, e.g. with a ~char *~ pointer, ~pointer+1~ points to the next byte (next char), for an ~int*~ pointer (normal 4-byte integer), ~pointer+1~ will point to the next int at an offset 4-bytes after pointer. (so a pointer, is just a pointer.... where arithmetic is automatically handled by the type).
+The operators available to take the address of an object and dereference pointers are the unary ~'&'~ (address of) operator and the unary ~*~ (dereference) operator. ~'&'~ in taking the address of an object adds one level of indirection. ~'*'~ in dereferening a pointer to get the value (or thing) pointed to by the pointer removes one level of indirection. It does not matter how many times you apply one after the other, one simply adds and the other removes a level of indirection making all but the final operator superfluous.
+(note: when dealing with an array-of-pointers, the postfix ~[..]~ operator used to obtain the pointer at an index of the array also acts to derefernce the array of pointers removing one level of indirection)

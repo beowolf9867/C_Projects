@@ -1,0 +1,65 @@
+* Chapter 22: Input/Output
+** Streams
+any source of input or any destination for output.
+*** File pointers
+to access a stream, one must use a /file pointer/, with type:
+#+begin_src C
+File *fp1, fp2;
+#+end_src
+*** Standard streams and redirection
+~<stdio.h>~ already provides three streams
+1. ~stdin~ --> standard input - keyboard
+2. ~stdout~ --> standard output - screen
+3. ~stderr~  --> stadnard error - screen
+you can redirect both the input and output:
+~demo <in.dat~ any input is not coming from the keyboard but rather the ~in.dat~ file.
+but ~demo~ does not know where it comes from.
+~demo ~>out.dat~ - same but for output
+*** Text files vs Binary files
+in a text file, humans can read and understand the bits.
+however, in a binary file, the bits don't represent characters, but rather integers, floating-point numbers and other things.
+**** The differences:
+1. text files are divided in lines
+2. text files may have a special end of file marker.
+*** File operations
+**** Opening a file
+first argument is file to be opened, second is mode string determining what we wish 
+to do with the file. 
+restrict meaning that the filneame and mode shouldn't have the same address
+#+begin_src C
+FILE *fopen(const char * restrict filename,
+ const char * restrict mode);
+#+end_src
+returning a file pointer
+**** Modes
+| String	 | Meaning                              |
+|------------+--------------------------------------|
+|          r | reading			                    |
+|          w | writing                              |
+|          a | appending file                       |
+|         r+ | reading and writing, from beginning  |
+|         w+ | reading and writing, truncate        |
+|         a+ | reading and writing, append          |
+using the mode b when opening binary file
+**** Closing a file
+#+begin_src C
+int fclose(FILE *stream);
+#+end_src
+returns 0 if successful.
+example of opening and closing a file:
+#+begin_src C
+#include <stdio.h>
+#include <stdlib.h>
+
+#define FILENAME "example.dat"
+
+int main(void) {
+  File *fp = fopen(FILENAME, "r");
+  if (fp == NULL) {
+    printf("can't open: %s\n", FILENAME); 
+  exit(EXIT_FAILURE);
+  }
+  fclose(fp);
+}
+#+end_src
+**** Attaching a file to an open stream
