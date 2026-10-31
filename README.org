@@ -1,7 +1,4 @@
 #+TITLE: Projects summary
-#+AUTHOR: Abdul
-
-* Overview
 
 This repository contains a collection of mini-projects, utility programs, data structures, and applications. 
 
@@ -9,40 +6,10 @@ This repository contains a collection of mini-projects, utility programs, data s
 
 | Directory     | Description                                           |
 |---------------+-------------------------------------------------------|
-| [[./Craps/][Craps]]       | Craps game TUI         |
-| [[./Flashcard/][Flashcard]]   | Flashcard application for study and memory training  |
-| [[./Notes/][Notes]]       | Note-taking utility or personal notes collection      |
-| [[./Stack/][Stack]]       | Stack data structure implementation and usage examples |
-| [[./texteditor/][texteditor]]  | Lightweight text editor application                   |
-| [[./wordsorter/][wordsorter]]  | Utility program for sorting and manipulating text/words|
-| [[./other/][other]]       | Extra files |
-
-* Projects Summary
-
-** Craps
-- *Path:* =./Craps/=
-- *Description:* Game logic and interface for playing or simulating the dice game Craps.
-
-** Flashcard
-- *Path:* =./Flashcard/=
-- *Description:* Interactive flashcard program designed for creating, editing, and reviewing study decks.
-
-** Notes
-- *Path:* =./Notes/=
-- *Description:* Organization tools or documents related to project notes and documentation.
-
-** Stack
-- *Path:* =./Stack/=
-- *Description:* Implementation of the Stack abstract data type (ADT) demonstrating standard operations (LIFO push/pop/peek).
-
-** Text Editor
-- *Path:* =./texteditor/=
-- *Description:* Simple text editor 
-
-** Word Sorter
-- *Path:* =./wordsorter/=
-- *Description:* Tool for reading input text, parsing words, and sorting them according to custom rules (alphabetical, frequency, etc.).
-
-** Other
-- *Path:* =./other/=
-- *Description:* Additional helper scripts and uncategorized projects.
+| [[./Craps/][Craps]]       | craps game TUI         |
+| [[./Flashcard/][Flashcard]]   | flashcard app |
+| [[./Notes/][Notes]]       | notes from textbook  |
+| [[./Stack/][Stack]]       | simple stack implementation |
+| [[./texteditor/][texteditor]]  | simple text editor              |
+| [[./wordsorter/][wordsorter]]  | quick word sorter              |
+| [[./other/][other]]       | extra files |
