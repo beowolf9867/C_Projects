@@ -1,6 +1,6 @@
 #+TITLE: Projects summary
 
-This repository contains a collection of mini-projects, utility programs, data structures, and applications. 
+collection of mini-projects
 
 ** Directory Structure
 
